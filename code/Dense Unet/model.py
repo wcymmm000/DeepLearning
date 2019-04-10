@@ -18,21 +18,21 @@ def unet(x, is_train=True, reuse=False):
     b_init = tf.constant_initializer(value=0.0)
     gamma_init=tf.random_normal_initializer(1., 0.02)
     def denseblock(net,kernel_num=64,name='DenseBlock'):
-	  with tf.variable_scope(name):
+      with tf.variable_scope(name):
         net = BatchNormLayer(net, act=lambda x: tl.act.lrelu(x, 0.2), is_train=is_train, gamma_init=gamma_init, name='bn1')
         net = Conv2d(net, kernel_num, (1,1), act=tf.nn.relu, name='cv1')
         net = BatchNormLayer(net, act=lambda x: tl.act.lrelu(x, 0.2), is_train=is_train, gamma_init=gamma_init, name='bn2')
         net = Conv2d(net, kernel_num, (3,3), act=tf.nn.relu, name='cv2')
-	  return net
+      return net
     def densehub(net,kernel_num=64,depth=5,name='densehub'):
-		with tf.variable_scope(name, reuse=reuse):
-        for layernum in range(0,depth):
-			if layernum==0:
-			    concat=net
-			else:
-			    concat=ConcatLayer([concat,net] , 3, name='c%d' % layernum)
-			net = denseblock(net,kernel_num,name='d%d' % layernum)
-	    return net
+        with tf.variable_scope(name, reuse=reuse):
+          for layernum in range(0,depth):
+            if layernum==0:
+                concat=net
+            else:
+                concat=ConcatLayer([concat,net] , 3, name='c%d' % layernum)
+            net = denseblock(concat,kernel_num,name='d%d' % layernum)
+        return net
     with tf.variable_scope("u_net", reuse=reuse):
         tl.layers.set_name_reuse(reuse)
         inputs = InputLayer(x, name='inputs')
