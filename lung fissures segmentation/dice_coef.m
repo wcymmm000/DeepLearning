@@ -2,11 +2,11 @@ function [ output_args ] = dice_coef( label_img,seg_img )
 %UNTITLED5 此处显示有关此函数的摘要
 %   此处显示详细说明
 
-label_img=round(label_img);
-seg_img=round(seg_img);
-fenmu=0;
-fenzi=0;
+seg_img=round(seg_img-0.1);
+
 for i1 = 1:size(label_img,4)
+    fenmu=0;
+   fenzi=0;
   for i2=1:4
       for i3=1:256
           for i4=1:256
@@ -20,7 +20,8 @@ for i1 = 1:size(label_img,4)
           end
       end
   end
+  output_args(i1,1)=fenzi/fenmu;
 end
-output_args=fenzi/fenmu;
+
 end
 
